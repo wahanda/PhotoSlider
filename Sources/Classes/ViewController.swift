@@ -10,6 +10,7 @@ import UIKit
 @objc public protocol PhotoSliderDelegate:NSObjectProtocol {
     optional func photoSliderControllerWillDismiss(viewController: PhotoSlider.ViewController)
     optional func photoSliderControllerDidDismiss(viewController: PhotoSlider.ViewController)
+    optional func photoSliderControllerDidScrollToPage(viewController: PhotoSlider.ViewController, page: Int)
 }
 
 enum PhotoSliderControllerScrollMode:UInt {
@@ -291,6 +292,10 @@ public class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderI
             page = 0
         } else if page >= self.imageResources()?.count {
             page = self.imageResources()!.count - 1;
+        }
+        
+        if self.currentPage != page {
+            self.delegate?.photoSliderControllerDidScrollToPage?(self, page: page)
         }
         
         self.currentPage = page
