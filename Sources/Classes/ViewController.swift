@@ -97,7 +97,6 @@ public class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderI
         self.scrollView.clipsToBounds = false
         self.scrollView.alwaysBounceHorizontal = true
         self.scrollView.alwaysBounceVertical = true
-        self.scrollView.scrollEnabled = true
         self.scrollView.accessibilityLabel = "PhotoSliderScrollView"
         self.view.addSubview(self.scrollView)
         self.layoutScrollView()
@@ -237,13 +236,6 @@ public class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderI
 
         if scrollInitalized == false {
             self.generateCurrentPage()
-            return
-        }
-        
-        let imageView = self.imageViews[self.currentPage]
-        if imageView.scrollView.zoomScale > 1.0 {
-            self.generateCurrentPage()
-            self.scrollView.scrollEnabled = false
             return
         }
         
@@ -393,7 +385,6 @@ public class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderI
 
     func photoSliderImageViewDidEndZooming(viewController: PhotoSlider.ImageView, atScale scale: CGFloat) {
         if scale <= 1.0 {
-            self.scrollView.scrollEnabled = true
             
             UIView.animateWithDuration(0.05, delay: 0.0, options: UIViewAnimationOptions.CurveLinear, animations: { () -> Void in
                 self.closeButton?.alpha = 1.0
@@ -404,7 +395,6 @@ public class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderI
                 }, completion: nil)
 
         } else {
-            self.scrollView.scrollEnabled = false
 
             UIView.animateWithDuration(0.05, delay: 0.0, options: UIViewAnimationOptions.CurveLinear, animations: { () -> Void in
                 self.closeButton?.alpha = 0.0
