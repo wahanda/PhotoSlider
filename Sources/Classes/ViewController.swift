@@ -329,35 +329,11 @@ public class ViewController:UIViewController, UIScrollViewDelegate, PhotoSliderI
             return
         }
         self.closeAnimating = true
-        
-        let screenHeight = UIScreen.mainScreen().bounds.size.height
-        let screenWidth = UIScreen.mainScreen().bounds.size.width
-        var movedHeight = CGFloat(0)
-        
         self.delegate?.photoSliderControllerWillDismiss?(self)
         
-        if up {
-            movedHeight = -screenHeight
-        } else {
-            movedHeight = screenHeight
-        }
+        self.dissmissViewControllerAnimated(true)
+        self.closeAnimating = false
         
-        UIView.animateWithDuration(
-            0.4,
-            delay: 0,
-            options: UIViewAnimationOptions.CurveEaseOut,
-            animations: { () -> Void in
-                self.scrollView.frame = CGRectMake(0, movedHeight, screenWidth, screenHeight)
-                self.backgroundView.alpha = 0.0
-                self.closeButton?.alpha = 0.0
-                self.captionLabel.alpha = 0.0
-                self.view.alpha = 0.0
-            },
-            completion: {(result) -> Void in
-                self.dissmissViewControllerAnimated(false)
-                self.closeAnimating = false
-            }
-        )
     }
     
     public func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
