@@ -6,14 +6,14 @@
 //
 
 import UIKit
-import Kingfisher
+import AlamofireImage
 
 protocol PhotoSliderImageViewDelegate {
     func photoSliderImageViewDidEndZooming(viewController: PhotoSlider.ImageView, atScale scale: CGFloat)
 }
 
 class ImageView: UIView, UIScrollViewDelegate {
-
+    
     var imageView: UIImageView!
     var scrollView: UIScrollView!
     var progressView: PhotoSlider.ProgressView!
@@ -23,17 +23,17 @@ class ImageView: UIView, UIScrollViewDelegate {
         super.init(frame: frame)
         self.initialize()
     }
-
+    
     required init(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)!
         self.initialize()
     }
     
     func initialize() {
-
+        
         self.backgroundColor = UIColor.clearColor()
         self.userInteractionEnabled = true
-
+        
         // for zoom
         self.scrollView = UIScrollView(frame: self.bounds)
         self.scrollView.showsHorizontalScrollIndicator = false
@@ -47,12 +47,12 @@ class ImageView: UIView, UIScrollViewDelegate {
         self.imageView = UIImageView(frame: CGRectZero)
         self.imageView.contentMode = UIViewContentMode.ScaleAspectFit
         self.imageView.userInteractionEnabled = true
-
+        
         self.addSubview(self.scrollView)
         self.layoutScrollView()
-
+        
         self.scrollView.addSubview(self.imageView)
-       
+        
         // progress view
         self.progressView = ProgressView(frame: CGRectZero)
         self.progressView.hidden = true
@@ -76,7 +76,7 @@ class ImageView: UIView, UIScrollViewDelegate {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-
+        
         let boundsSize = self.bounds.size
         var frameToCenter = self.imageView.frame
         
@@ -147,27 +147,22 @@ class ImageView: UIView, UIScrollViewDelegate {
         
         self.progressView.hidden = false
         
-        self.imageView.kf_setImageWithURL(
-            imageURL,
-            placeholderImage: nil,
-            optionsInfo: [.CacheMemoryOnly],
-            progressBlock: { (receivedSize, totalSize) -> () in
+        self.imageView.af_setImageWithURL(imageURL, placeholderImage: nil,
+            filter: nil,
+            imageTransition: UIImageView.ImageTransition.CrossDissolve(0.28),
+            runImageTransitionIfCached: false) { (response) in
                 
-                let progress = Float(receivedSize) / Float(totalSize)
-                self.progressView.animateCurveToProgress(progress)
-
-            }) { (image, error, cacheType, imageURL) -> () in
                 self.progressView.hidden = true
-                
-                if error == nil {
-                    self.layoutImageView(image!)
+                switch response.result {
+                case .Success(let image):
+                    self.layoutImageView(image)
+                case .Failure(_): break
                 }
         }
-        
     }
     
     func setImage(image:UIImage) {
-
+        
         self.imageView.image = image
         self.layoutImageView(image)
         
@@ -188,12 +183,12 @@ class ImageView: UIView, UIScrollViewDelegate {
             }
             
         } else {
-
+            
             frame.size = CGSize(width: width, height: self.bounds.height)
             if width >= self.bounds.width {
                 frame.size = CGSize(width: self.bounds.width, height: height)
             }
-
+            
         }
         
         self.imageView.frame = frame
@@ -209,19 +204,19 @@ class ImageView: UIView, UIScrollViewDelegate {
     }
     
     func didDoubleTap(sender: UIGestureRecognizer) {
-
+        
         if self.scrollView.zoomScale == 1.0 {
-
+            
             let touchPoint = sender.locationInView(self)
             self.scrollView.zoomToRect(CGRect(x: touchPoint.x, y: touchPoint.y, width: 1, height: 1), animated: true)
-
-
+            
+            
             
         } else {
-
+            
             self.scrollView.setZoomScale(0.0, animated: true)
-
-
+            
+            
         }
     }
     
